@@ -1,0 +1,8 @@
+name: Rest Normalizations Video Embed Field
+type: module
+description: Hoppinger Normalizations for the REST API for Video Embed Field
+core: 8.x
+package: Hoppinger
+dependencies:
+  - rest_normalizations
+  - video_embed_field

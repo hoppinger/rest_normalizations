@@ -1,0 +1,12 @@
+services:
+  rest_normalizations_video_embed_field.normalizer.video_embed_field:
+    class: Drupal\rest_normalizations_video_embed_field\Normalizer\VideoEmbedFieldNormalizer
+    tags:
+      - { name: normalizer, priority: 20 }
+    arguments: ['@video_embed_field.provider_manager']
+
+  rest_normalizations_video_embed_field.ts_generator_component.field.video_embed:
+    class: Drupal\rest_normalizations_video_embed_field\ComponentGenerator\VideoEmbedFieldGenerator
+    tags:
+      - { name: ts_generator_component, priority: 20 }
+    arguments: ['@plugin.manager.field.field_type']

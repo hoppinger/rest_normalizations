@@ -1,0 +1,75 @@
+services:
+  rest_normalizations.normalizer.text_field_item:
+    class: Drupal\rest_normalizations\Normalizer\TextFieldItemNormalizer
+    tags:
+      - { name: normalizer, priority: 8 }
+  rest_normalizations.normalizer.link_item:
+    class: Drupal\rest_normalizations\Normalizer\LinkItemNormalizer
+    tags:
+      - { name: normalizer, priority: 20 }
+  rest_normalizations.normalizer.entity_reference_field_item:
+    class: Drupal\rest_normalizations\Normalizer\EntityReferenceFieldItemNormalizer
+    tags:
+      - { name: normalizer, priority: 20 }
+  rest_normalizations.normalizer.entity_reference_field_item_target:
+    class: Drupal\rest_normalizations\Normalizer\EntityReferenceFieldItemTargetNormalizer
+    tags:
+      - { name: normalizer, priority: 25 }
+    arguments: ['%rest_normalizations.target_identifiers%']
+  rest_normalizations.normalizer.image_entity:
+      class: Drupal\rest_normalizations\Normalizer\ImageNormalizer
+      tags:
+        - { name: normalizer, priority: 5 }
+      arguments: ['@entity.manager']
+
+  rest_normalizations.ts_generator_component.entity_file:
+    class: Drupal\rest_normalizations\ComponentGenerator\FileGenerator
+    tags:
+      - { name: ts_generator_component, priority: 20 }
+    arguments: ['@entity_type.manager', '@entity_field.manager']
+  rest_normalizations.ts_generator_component.entity_node:
+    class: Drupal\rest_normalizations\ComponentGenerator\NodeGenerator
+    tags:
+      - { name: ts_generator_component, priority: 20 }
+    arguments: ['@entity_type.manager', '@entity_field.manager']
+  rest_normalizations.ts_generator_component.entity_paragraph:
+    class: Drupal\rest_normalizations\ComponentGenerator\ParagraphGenerator
+    tags:
+      - { name: ts_generator_component, priority: 20 }
+    arguments: ['@entity_type.manager', '@entity_field.manager']
+  rest_normalizations.ts_generator_component.entity_media:
+    class: Drupal\rest_normalizations\ComponentGenerator\MediaGenerator
+    tags:
+      - { name: ts_generator_component, priority: 20 }
+    arguments: ['@entity_type.manager', '@entity_field.manager']
+  rest_normalizations.ts_generator_component.field.text:
+    class: Drupal\rest_normalizations\ComponentGenerator\TextFieldGenerator
+    tags:
+      - { name: ts_generator_component, priority: 20 }
+    arguments: ['@plugin.manager.field.field_type']
+  rest_normalizations.ts_generator_component.field.link:
+    class: Drupal\rest_normalizations\ComponentGenerator\LinkFieldGenerator
+    tags:
+      - { name: ts_generator_component, priority: 20 }
+    arguments: ['@plugin.manager.field.field_type']
+  rest_normalizations.ts_generator_component.field.entity_reference:
+    class: Drupal\rest_normalizations\ComponentGenerator\EntityReferenceFieldGenerator
+    tags:
+      - { name: ts_generator_component, priority: 20 }
+    arguments: ['@plugin.manager.field.field_type', '@entity_type.manager']
+  rest_normalizations.ts_generator_component.field.entity_reference_target:
+    class: Drupal\rest_normalizations\ComponentGenerator\EntityReferenceTargetFieldGenerator
+    tags:
+      - { name: ts_generator_component, priority: 21 }
+    arguments: ['@plugin.manager.field.field_type', '@entity_type.manager', '%rest_normalizations.target_identifiers%']
+  rest_normalizations.ts_generator_component.field.file:
+    class: Drupal\rest_normalizations\ComponentGenerator\FileFieldGenerator
+    tags:
+      - { name: ts_generator_component, priority: 22 }
+    arguments: ['@plugin.manager.field.field_type', '@entity_type.manager', '%rest_normalizations.target_identifiers%']
+
+parameters:
+  rest_normalizations.target_identifiers:
+    - media
+    - file
+    - paragraph
