@@ -1,0 +1,15 @@
+{
+  "name": "hoppinger/rest_normalizations",
+  "description": "Drupal module to extend REST resources",
+  "type": "drupal-module",
+  "license": "GPL-2.0+",
+  "minimum-stability": "dev",
+  "homepage": "https://github.com/hoppinger/rest_normalizations",
+  "authors": [
+    {
+      "name": "Rolf van de Krol",
+      "role": "Maintainer"
+    }
+  ],
+  "require": {},
+}
