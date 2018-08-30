@@ -4,6 +4,7 @@ namespace Drupal\rest_normalizations\Normalizer;
 
 use Drupal\serialization\Normalizer\FieldItemNormalizer;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;
+use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 
 class LinkItemNormalizer extends FieldItemNormalizer {
   /**
@@ -17,6 +18,10 @@ class LinkItemNormalizer extends FieldItemNormalizer {
     /** @var \Drupal\link\Plugin\Field\FieldType\LinkItem $field_item */
     $values = parent::normalize($field_item, $format, $context);
     $values['processed_url'] = $field_item->getUrl()->toString();
+
+    if (isset($context[CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY])) {
+      $context[CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY]->addCacheableDependency($field_item);
+    }
 
     return $values;
   }
