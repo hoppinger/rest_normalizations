@@ -27,7 +27,10 @@ class FileFieldGenerator extends EntityReferenceTargetFieldGenerator {
         'image' => 'target'
       ];
     } else {
-      return 'target';
+      return [
+        'description',
+        'file' => 'target'
+      ];
     }
   }
 }
