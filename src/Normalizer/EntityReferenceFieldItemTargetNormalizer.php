@@ -7,7 +7,6 @@ use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal;
 
 class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemNormalizer {
-
   /**
    * @var string[]
    */
