@@ -14,6 +14,8 @@ use Symfony\Component\DependencyInjection\Container;
 class EntityReferenceTargetFieldGenerator extends EntityReferenceFieldGenerator {
   use UnionGenerator;
 
+  protected $needsItemGuard = true;
+
   /**
    * @var string[]
    */
