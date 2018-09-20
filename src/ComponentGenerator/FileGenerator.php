@@ -46,6 +46,8 @@ class FileGenerator extends EntityGenerator {
       }
     }
 
+    $mapping['url'] = 'uri';
+
     return $mapping;
   }
 
