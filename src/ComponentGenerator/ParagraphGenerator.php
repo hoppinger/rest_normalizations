@@ -2,12 +2,11 @@
 
 namespace Drupal\rest_normalizations\ComponentGenerator;
 
-use Drupal\ts_generator\ComponentGenerator\Entity\EntityGenerator;
 use Drupal\ts_generator\ComponentResult;
 use Drupal\ts_generator\Result;
 use Drupal\ts_generator\Settings;
 
-class ParagraphGenerator extends EntityGenerator {
+class ParagraphGenerator extends ContentEntityGenerator {
   public function supportsGeneration($object) {
     if (!parent::supportsGeneration($object)) {
       return FALSE;
