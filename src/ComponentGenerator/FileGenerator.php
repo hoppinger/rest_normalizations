@@ -32,7 +32,6 @@ class FileGenerator extends EntityGenerator {
 
     foreach ([
       'language',
-      'label',
       'uid',
       'uri',
       'filemime',
