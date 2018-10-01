@@ -9,9 +9,9 @@ composer require hoppinger/rest_normalizations
 ```
 
 ## Usage
-Rest Normalizer module helps to embed the entity referenced in the content, by altering the REST API. 
+Rest Normalization module helps to embed the entity referenced in the content, by altering the REST API. 
 
-For example, The Entity reference field in the REST Output provides the target_id, target_type and URI. In some cases, we need more data regarding the referenced entity other than the provided data. Rest Normalizer helps to solve this problem by overriding the default values and embedding the entity data into the response.
+For example, The Entity reference field in the REST Output provides the target_id, target_type and URI. In some cases, we need more data regarding the referenced entity other than the provided data. Rest Normalization helps to solve this problem by overriding the default values and embedding the entity data into the response.
 
 Create a .php file in the module directory with the following content. Replace the `<target_identifier>` with the project-specific entity reference field that needs to be embedded into the API response (for example: `paragraph-locaties-field_locations`)
 
