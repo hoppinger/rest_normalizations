@@ -2,18 +2,30 @@
 
 namespace Drupal\rest_normalizations\Normalizer;
 
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\serialization\Normalizer\FieldItemNormalizer;
 use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
+use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal;
 
 class EntityReferenceFieldItemNormalizer extends FieldItemNormalizer {
   protected $supportedInterfaceOrClass = EntityReferenceItem::class;
 
+  /**
+   * @var LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  public function __construct(LanguageManagerInterface $languageManager) {
+    $this->languageManager = $languageManager;
+  }
+
   public function normalize($field_item, $format = NULL, array $context = []) {
     $values = parent::normalize($field_item, $format, $context);
 
-    $langcode = $field_item->getLangcode();
+    $langcode = $this->languageManager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT);
 
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
     if ($entity = $field_item->get('entity')->getValue()) {
@@ -33,6 +45,10 @@ class EntityReferenceFieldItemNormalizer extends FieldItemNormalizer {
       }
 
       $values['target_label'] = $entity->label();
+    }
+
+    if (isset($context[CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY])) {
+      $context[CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY]->addCacheableDependency($field_item);
     }
 
     return $values;

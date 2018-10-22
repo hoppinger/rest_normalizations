@@ -16,11 +16,12 @@ services:
     class: Drupal\rest_normalizations\Normalizer\EntityReferenceFieldItemNormalizer
     tags:
       - { name: normalizer, priority: 20 }
+    arguments: ['@language_manager']
   rest_normalizations.normalizer.entity_reference_field_item_target:
     class: Drupal\rest_normalizations\Normalizer\EntityReferenceFieldItemTargetNormalizer
     tags:
       - { name: normalizer, priority: 25 }
-    arguments: ['%rest_normalizations.target_identifiers%']
+    arguments: ['@language_manager', '%rest_normalizations.target_identifiers%']
   rest_normalizations.normalizer.image_entity:
       class: Drupal\rest_normalizations\Normalizer\ImageNormalizer
       tags:

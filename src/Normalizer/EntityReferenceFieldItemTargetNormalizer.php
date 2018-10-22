@@ -3,6 +3,8 @@
 namespace Drupal\rest_normalizations\Normalizer;
 
 use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal;
 
@@ -12,7 +14,8 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
    */
   protected $target_identifiers;
 
-  public function __construct($target_identifiers) {
+  public function __construct(LanguageManagerInterface $languageManager, $target_identifiers) {
+    parent::__construct($languageManager);
     $this->target_identifiers = $target_identifiers;
   }
 
@@ -41,7 +44,7 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
   public function normalize($field_item, $format = NULL, array $context = []) {
     $values = parent::normalize($field_item, $format, $context);
 
-    $langcode = $field_item->getLangcode();
+    $langcode = $this->languageManager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT);
 
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
     if ($entity = $field_item->get('entity')->getValue()) {
