@@ -25,7 +25,7 @@ class EntityReferenceFieldItemNormalizer extends FieldItemNormalizer {
   public function normalize($field_item, $format = NULL, array $context = []) {
     $values = parent::normalize($field_item, $format, $context);
 
-    $langcode = $this->languageManager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT);
+    $langcode = $this->languageManager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
 
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
     if ($entity = $field_item->get('entity')->getValue()) {
