@@ -25,7 +25,15 @@ class ContentEntityNormalizer extends BaseNormalizer {
         return $data;
       }
       
-      $data['entity_operations'] = $listBuilder->getOperations($object);
+      $operations = $listBuilder->getOperations($object);
+      $data['entity_operations'] = $operations ? [] : new StdClass;
+      foreach ($operations as $key => $operation) {
+        $data['entity_operations'][$key] = [
+          'title' => $operation['title'],
+          'url' => is_string($operation['url']) ? $operation['url'] : $operation['url']->toString(),
+          'weight' => !empty($operation['weight']) ? intval($operation['weight']) : 0
+        ];
+      }
 
       if (isset($context[CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY])) {
         $context[CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY]->addCacheContexts(['user']);
