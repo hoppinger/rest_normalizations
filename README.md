@@ -25,7 +25,7 @@ class AlterServiceProvider extends ServiceProviderBase {
     if ($container->hasParameter('rest_normalizations.target_identifiers')) {
       $target_identifiers = $container->getParameter('rest_normalizations.target_identifiers');
       
-      $target_identifiers[] = <target_identifier>;
+      $target_identifiers[] = <target_identifier>; #e.g., node-story_overview-field_featured_story
   
       $container->setParameter('rest_normalizations.target_identifiers', $target_identifiers);
   }
