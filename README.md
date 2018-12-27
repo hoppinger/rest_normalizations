@@ -15,7 +15,7 @@ For example, The Entity reference field in the REST Output provides the target_i
 
 Create a .php file in the module directory <directory>/src with the following content. Replace the `<target_identifier>` with the project-specific entity reference field that needs to be embedded into the API response (for example: `node-story_overview-field_featured_story`)
 
-The <target_identifiers> can be entityreference fields, Paragraphs, Image fields, Video fields, Media field, Taxonomyreference field. 
+The <target_identifiers> can be entityreference fields, Paragraphs, File, Image, Video, Media, Taxonomyreference field. 
 
 The filename must be similar to the module name i.e., ModuleNameServiceProvider.php and must be placed in the src folder.
 
