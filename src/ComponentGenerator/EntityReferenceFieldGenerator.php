@@ -13,7 +13,7 @@ class EntityReferenceFieldGenerator extends BaseEntityReferenceFieldGenerator {
 
     $properties = parent::getItemProperties($object, $settings, $result, $component_result);
 
-    $properties['target_label'] = 'string';
+    $properties['target_label?'] = 'string';
 
     return $properties;
   }

@@ -72,7 +72,7 @@ class EntityReferenceTargetFieldGenerator extends EntityReferenceFieldGenerator 
 
     $properties = parent::getItemProperties($object, $settings, $result, $component_result);
 
-    $properties['target'] = $this->getTargetProperty($object, $settings, $result, $component_result);
+    $properties['target?'] = $this->getTargetProperty($object, $settings, $result, $component_result);
 
     return $properties;
   }
@@ -130,5 +130,36 @@ class EntityReferenceTargetFieldGenerator extends EntityReferenceFieldGenerator 
 
   public function getItemMapping($object, $properties, Settings $settings, Result $result, ComponentResult $componentResult) {
     return 'target';
+  }
+
+  public function generateTargetType($object, Settings $settings, Result $result, ComponentResult $componentResult) {
+    /** @var \Drupal\Core\Field\FieldDefinitionInterface $object */
+
+    if ($object->getFieldStorageDefinition()->getCardinality() == 1) {
+      return parent::generateTargetType($object, $settings, $result, $componentResult);
+    }
+
+    $item_target_type = $componentResult->getContext('item')->getComponent('target_type');
+    $item_target_type = implode(' | ', array_diff(array_map('trim', explode('|', $item_target_type)), array('undefined')));
+
+    return ':/immutable/List:<' . $item_target_type . '>';
+  }
+
+  public function generateParser($object, Settings $settings, Result $result, ComponentResult $componentResult) {
+    if ($object->getFieldStorageDefinition()->getCardinality() == 1) {
+      return parent::generateParser($object, $settings, $result, $componentResult);
+    }
+
+    $type = $this->generateType($object, $settings, $result, $componentResult);
+    $target_type = $this->generateTargetType($object, $settings, $result, $componentResult);
+    $target_type = $this->cleanupPropertyType($target_type);
+
+    $item_target_type = $componentResult->getContext('item')->getComponent('target_type');
+    $item_target_type = implode(' | ', array_diff(array_map('trim', explode('|', $item_target_type)), array('undefined')));
+    $item_parser = $componentResult->getContext('item')->getComponent('parser');
+    $item_guard = $componentResult->getContext('item')->getComponent('guard');
+
+    $name = 'plural_' . Container::underscore($this->getName($object, $settings, $result, $componentResult)) . '_parser';
+    return $result->setComponent('parser/' . $name, 'const ' . $name . " =\n  (f: " . $type . '): ' . $target_type . " =>\n    :/immutable/List:<" . $item_target_type . '>(f' . ($item_guard ? '.filter(i => ' .  $item_guard . '(i))' : '') . '.map(i => ' . $item_parser . '(i)).filter(i => i !== undefined))');
   }
 }
