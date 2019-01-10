@@ -68,8 +68,8 @@ class FileGenerator extends EntityGenerator {
     $imageResult->setComponent(
       'guard',
       $result->setComponent(
-        'parser/' . Container::underscore($name) . 'guard',
-        'const ' . Container::underscore($name) . 'guard = (t:' . $componentResult->getComponent('type') . '): t is ' . $imageResult->getComponent('type') . ' => (t as any).style_urls !== undefined'
+        'parser/' . Container::underscore($name) . '_guard',
+        'const ' . Container::underscore($name) . '_guard = (t:' . $componentResult->getComponent('type') . '): t is ' . $imageResult->getComponent('type') . ' => (t as any).style_urls !== undefined'
       )
     );
 
@@ -90,8 +90,8 @@ class FileGenerator extends EntityGenerator {
     $otherResult->setComponent(
       'guard',
       $result->setComponent(
-        'parser/' . Container::underscore($name) . 'guard',
-        'const ' . Container::underscore($name) . 'guard = (t:' . $componentResult->getComponent('type') . '): t is ' . $otherResult->getComponent('type') . ' => (t as any).style_urls === undefined'
+        'parser/' . Container::underscore($name) . '_guard',
+        'const ' . Container::underscore($name) . '_guard = (t:' . $componentResult->getComponent('type') . '): t is ' . $otherResult->getComponent('type') . ' => (t as any).style_urls === undefined'
       )
     );
 
