@@ -3,7 +3,7 @@ services:
     class: Drupal\rest_normalizations\Normalizer\ContentEntityNormalizer
     tags:
       - { name: normalizer, priority: 3 }
-    arguments: ['@entity.manager']
+    arguments: ['@entity.manager', '%rest_normalizations.content_entity_operations_exclude%']
   rest_normalizations.normalizer.text_field_item:
     class: Drupal\rest_normalizations\Normalizer\TextFieldItemNormalizer
     tags:
@@ -26,7 +26,7 @@ services:
       class: Drupal\rest_normalizations\Normalizer\ImageNormalizer
       tags:
         - { name: normalizer, priority: 5 }
-      arguments: ['@entity.manager']
+      arguments: ['@entity.manager', '%rest_normalizations.content_entity_operations_exclude%']
 
   rest_normalizations.ts_generator_component.entity_file:
     class: Drupal\rest_normalizations\ComponentGenerator\FileGenerator
@@ -37,22 +37,22 @@ services:
     class: Drupal\rest_normalizations\ComponentGenerator\ContentEntityGenerator
     tags:
       - { name: ts_generator_component, priority: 20 }
-    arguments: ['@entity_type.manager', '@entity_field.manager', '@language_manager']
+    arguments: ['@entity_type.manager', '@entity_field.manager', '@language_manager', '%rest_normalizations.content_entity_operations_exclude%']
   rest_normalizations.ts_generator_component.entity_node:
     class: Drupal\rest_normalizations\ComponentGenerator\NodeGenerator
     tags:
       - { name: ts_generator_component, priority: 20 }
-    arguments: ['@entity_type.manager', '@entity_field.manager', '@language_manager']
+    arguments: ['@entity_type.manager', '@entity_field.manager', '@language_manager', '%rest_normalizations.content_entity_operations_exclude%']
   rest_normalizations.ts_generator_component.entity_paragraph:
     class: Drupal\rest_normalizations\ComponentGenerator\ParagraphGenerator
     tags:
       - { name: ts_generator_component, priority: 20 }
-    arguments: ['@entity_type.manager', '@entity_field.manager', '@language_manager']
+    arguments: ['@entity_type.manager', '@entity_field.manager', '@language_manager', '%rest_normalizations.content_entity_operations_exclude%']
   rest_normalizations.ts_generator_component.entity_media:
     class: Drupal\rest_normalizations\ComponentGenerator\MediaGenerator
     tags:
       - { name: ts_generator_component, priority: 20 }
-    arguments: ['@entity_type.manager', '@entity_field.manager', '@language_manager']
+    arguments: ['@entity_type.manager', '@entity_field.manager', '@language_manager', '%rest_normalizations.content_entity_operations_exclude%']
   rest_normalizations.ts_generator_component.field.text:
     class: Drupal\rest_normalizations\ComponentGenerator\TextFieldGenerator
     tags:
@@ -84,3 +84,5 @@ parameters:
     - media
     - file
     - paragraph
+  rest_normalizations.content_entity_operations_exclude:
+    - commerce_product_variation

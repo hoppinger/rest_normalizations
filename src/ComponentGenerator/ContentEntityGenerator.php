@@ -17,10 +17,29 @@ class ContentEntityGenerator extends EntityGenerator {
    */
   protected $languageManager;
 
-  public function __construct(EntityTypeManagerInterface $entityTypeManager, EntityFieldManagerInterface $entityFieldManager, LanguageManagerInterface $languageManager) {
+  /**
+   * @var string[]
+   */
+  protected $exclude_operations;
+
+  public function __construct(EntityTypeManagerInterface $entityTypeManager, EntityFieldManagerInterface $entityFieldManager, LanguageManagerInterface $languageManager, $exclude_operations) {
     parent::__construct($entityTypeManager, $entityFieldManager);
 
     $this->languageManager = $languageManager;
+    $this->exclude_operations = $exclude_operations;
+  }
+
+  protected function operationsExcluded($entity_type_id) {
+    foreach ($this->exclude_operations as $exclude_operation) {
+      $exclude_operation_regex = '/' . implode('.*', array_map(function($x) {
+        return preg_quote($x, '/');
+      }, explode('*', $exclude_operation))) . '/';
+      if (preg_match($exclude_operation_regex, $entity_type_id)) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
   }
 
   public function supportsGeneration($object) {
@@ -101,7 +120,9 @@ class ContentEntityGenerator extends EntityGenerator {
     $properties = parent::getBaseProperties($object, $settings, $result, $componentResult);
 
     $properties['language_links'] = $componentResult->getContext('language_links');
-    $properties['entity_operations'] = $componentResult->getContext('operations');
+    if (!$this->operationsExcluded($object->id())) {
+      $properties['entity_operations'] = $componentResult->getContext('operations');
+    }
 
     return $properties;
   }
