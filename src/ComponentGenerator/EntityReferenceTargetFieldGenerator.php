@@ -146,10 +146,6 @@ class EntityReferenceTargetFieldGenerator extends EntityReferenceFieldGenerator 
   }
 
   public function generateParser($object, Settings $settings, Result $result, ComponentResult $componentResult) {
-    if ($object->getFieldStorageDefinition()->getCardinality() == 1) {
-      return parent::generateParser($object, $settings, $result, $componentResult);
-    }
-
     $type = $this->generateType($object, $settings, $result, $componentResult);
     $target_type = $this->generateTargetType($object, $settings, $result, $componentResult);
     $target_type = $this->cleanupPropertyType($target_type);
@@ -158,6 +154,16 @@ class EntityReferenceTargetFieldGenerator extends EntityReferenceFieldGenerator 
     $item_target_type = implode(' | ', array_diff(array_map('trim', explode('|', $item_target_type)), array('undefined')));
     $item_parser = $componentResult->getContext('item')->getComponent('parser');
     $item_guard = $componentResult->getContext('item')->getComponent('guard');
+    
+    if ($object->getFieldStorageDefinition()->getCardinality() == 1) {
+      if ($object->isRequired()) {
+        $name = 'singular_required_' . Container::underscore($this->getName($object, $settings, $result, $componentResult)) . '_parser';
+        return $result->setComponent('parser/' . $name, 'const ' . $name . ' = (f: ' . $type . '): ' . $target_type . ' => (f[0] !== undefined ? ' . $item_parser . '(f[0]) : undefined)');
+      } else {
+        $name = 'singular_optional_' . Container::underscore($this->getName($object, $settings, $result, $componentResult)) . '_parser';
+        return $result->setComponent('parser/' . $name, 'const ' . $name . ' = (f: ' . $type . '): ' . $target_type . ' => f && f.length > 0' . ($item_guard ? ' && ' .  $item_guard . '(f[0])' : '') . ' ? ' . $item_parser . '(f[0]) : null');
+      }
+    }
 
     $name = 'plural_' . Container::underscore($this->getName($object, $settings, $result, $componentResult)) . '_parser';
     return $result->setComponent('parser/' . $name, 'const ' . $name . " =\n  (f: " . $type . '): ' . $target_type . " =>\n    :/immutable/List:<" . $item_target_type . '>(f' . ($item_guard ? '.filter(i => ' .  $item_guard . '(i))' : '') . '.map(i => ' . $item_parser . '(i)).filter(i => i !== undefined))');
