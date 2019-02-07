@@ -152,13 +152,22 @@ class EntityReferenceTargetFieldGenerator extends EntityReferenceFieldGenerator 
 
     $item_target_type = $componentResult->getContext('item')->getComponent('target_type');
     $item_target_type = implode(' | ', array_diff(array_map('trim', explode('|', $item_target_type)), array('undefined')));
+
+    $item_properties = $this->getItemProperties($object, $settings, $result, $componentResult);
+    $item_mapping = $this->getItemMapping($object, $properties, $settings, $result, $componentResult);
+
     $item_parser = $componentResult->getContext('item')->getComponent('parser');
     $item_guard = $componentResult->getContext('item')->getComponent('guard');
     
     if ($object->getFieldStorageDefinition()->getCardinality() == 1) {
       if ($object->isRequired()) {
         $name = 'singular_required_' . Container::underscore($this->getName($object, $settings, $result, $componentResult)) . '_parser';
-        return $result->setComponent('parser/' . $name, 'const ' . $name . ' = (f: ' . $type . '): ' . $target_type . ' => (f[0] !== undefined ? ' . $item_parser . '(f[0]) : undefined)');
+
+        if (is_string($item_mapping) && substr($item_mapping, -1) == '?') {
+          return $result->setComponent('parser/' . $name, 'const ' . $name . ' = (f: ' . $type . '): ' . $target_type . ' => (f[0] !== undefined ? ' . $item_parser . '(f[0]) : undefined)');
+        } else {
+          return $result->setComponent('parser/' . $name, 'const ' . $name . ' = (f: ' . $type . '): ' . $target_type . ' => ' . $item_parser . '(f[0])');
+        }
       } else {
         $name = 'singular_optional_' . Container::underscore($this->getName($object, $settings, $result, $componentResult)) . '_parser';
         return $result->setComponent('parser/' . $name, 'const ' . $name . ' = (f: ' . $type . '): ' . $target_type . ' => f && f.length > 0' . ($item_guard ? ' && ' .  $item_guard . '(f[0])' : '') . ' ? ' . $item_parser . '(f[0]) : null');
