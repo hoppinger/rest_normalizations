@@ -4,9 +4,12 @@ namespace Drupal\rest_normalizations\Normalizer;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\EntityTypeRepositoryInterface;
 use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Drupal\serialization\Normalizer\ContentEntityNormalizer as BaseNormalizer;
+
 
 class ContentEntityNormalizer extends BaseNormalizer {
   /**
@@ -14,8 +17,8 @@ class ContentEntityNormalizer extends BaseNormalizer {
    */
   protected $exclude_operations;
 
-  public function __construct(EntityManagerInterface $entity_manager, $exclude_operations) {
-    parent::__construct($entity_manager);
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityTypeRepositoryInterface $entity_type_repository = NULL, EntityFieldManagerInterface $entity_field_manager = NULL, $exclude_operations) {
+    parent::__construct($entity_type_manager);
 
     $this->exclude_operations = $exclude_operations;
   }
@@ -45,7 +48,7 @@ class ContentEntityNormalizer extends BaseNormalizer {
 
     if (!$this->operationsExcluded($object->getEntityTypeId()) && $currentUser->hasPermission('view entity operations in rest')) {
       try {
-        $listBuilder = $this->entityManager->getListBuilder($object->getEntityTypeId());
+        $listBuilder = $this->entityTypeManager->getListBuilder($object->getEntityTypeId());
       } catch (InvalidPluginDefinitionException $e) {
         return $data;
       }

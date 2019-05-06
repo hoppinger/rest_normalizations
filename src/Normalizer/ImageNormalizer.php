@@ -2,7 +2,6 @@
 
 namespace Drupal\rest_normalizations\Normalizer;
 
-use Drupal\serialization\Normalizer\ContentEntityNormalizer;
 use Drupal\Core\Entity\Entity;
 use Drupal\file\Entity\File;
 use Drupal;
@@ -29,7 +28,7 @@ class ImageNormalizer extends ContentEntityNormalizer {
     $path = $entity->getFileUri();
 
     $data['style_urls'] = [];
-    $styles = $this->entityManager->getStorage('image_style')->loadMultiple();
+    $styles = $this->entityTypeManager->getStorage('image_style')->loadMultiple();
     foreach ($styles as $style) {
       $data['style_urls'][$style->id()] = $style->buildUrl($path);
     }
