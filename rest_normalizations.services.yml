@@ -3,7 +3,7 @@ services:
     class: Drupal\rest_normalizations\Normalizer\ContentEntityNormalizer
     tags:
       - { name: normalizer, priority: 3 }
-    arguments: ['@entity.manager', '%rest_normalizations.content_entity_operations_exclude%']
+    arguments: ['@entity_type.manager', '@entity_type.repository', '@entity_field.manager', '%rest_normalizations.content_entity_operations_exclude%']
   rest_normalizations.normalizer.text_field_item:
     class: Drupal\rest_normalizations\Normalizer\TextFieldItemNormalizer
     tags:
@@ -26,7 +26,7 @@ services:
       class: Drupal\rest_normalizations\Normalizer\ImageNormalizer
       tags:
         - { name: normalizer, priority: 5 }
-      arguments: ['@entity.manager', '%rest_normalizations.content_entity_operations_exclude%']
+      arguments: ['@entity_type.manager', '@entity_type.repository', '@entity_field.manager', '%rest_normalizations.content_entity_operations_exclude%']
 
   rest_normalizations.ts_generator_component.entity_file:
     class: Drupal\rest_normalizations\ComponentGenerator\FileGenerator
