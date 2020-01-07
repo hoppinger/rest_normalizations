@@ -40,6 +40,7 @@ class ModuleNameServiceProvider extends ServiceProviderBase {
       $target_identifiers[] = <target_identifier>; #e.g., node-story_overview-field_featured_story
   
       $container->setParameter('rest_normalizations.target_identifiers', $target_identifiers);
+    }
   }
 }
 ```
