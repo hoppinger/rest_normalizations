@@ -34,7 +34,7 @@ class EntityReferenceFieldItemNormalizer extends FieldItemNormalizer {
       $values['target_uuid'] = $entity->uuid();
 
       if ($entity instanceof TranslatableInterface) {
-        $entity = Drupal::entityManager()->getTranslationFromContext($entity, $langcode);
+        $entity = \Drupal::service('entity.repository')->getTranslationFromContext($entity, $langcode);
       }
 
       // Add a 'url' value if there is a reference and a canonical URL. Hard

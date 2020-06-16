@@ -50,9 +50,9 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
     if ($entity = $field_item->get('entity')->getValue()) {
 
       if ($entity instanceof TranslatableInterface) {
-        $entity = Drupal::entityManager()->getTranslationFromContext($entity, $langcode);
+        $entity = \Drupal::service('entity.repository')->getTranslationFromContext($entity, $langcode);
       }
-      
+
       $this->addCacheableDependency($context, $entity);
       $values['target'] = $this->serializer->normalize($entity, $format, $context);
     }
