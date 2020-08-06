@@ -41,7 +41,7 @@ class ContentEntityNormalizer extends BaseNormalizer {
 
     $data['language_links'] = [];
     foreach ($object->getTranslationLanguages() as $language) {
-      $data['language_links'][$language->getId()] = $object->getTranslation($language->getId())->url('canonical');
+      $data['language_links'][$language->getId()] = $object->getTranslation($language->getId());
     }
 
     $currentUser = \Drupal::currentUser();
