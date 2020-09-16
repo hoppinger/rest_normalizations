@@ -20,13 +20,18 @@ services:
   rest_normalizations.normalizer.entity_reference_field_item_target:
     class: Drupal\rest_normalizations\Normalizer\EntityReferenceFieldItemTargetNormalizer
     tags:
-      - { name: normalizer, priority: 25 }
+      - { name: normalizer, priority: 30 }
     arguments: ['@language_manager', '%rest_normalizations.target_identifiers%']
   rest_normalizations.normalizer.image_entity:
-      class: Drupal\rest_normalizations\Normalizer\ImageNormalizer
-      tags:
-        - { name: normalizer, priority: 5 }
-      arguments: ['@entity_type.manager', '@entity_type.repository', '@entity_field.manager', '%rest_normalizations.content_entity_operations_exclude%']
+    class: Drupal\rest_normalizations\Normalizer\ImageNormalizer
+    tags:
+      - { name: normalizer, priority: 5 }
+    arguments: ['@entity_type.manager', '@entity_type.repository', '@entity_field.manager', '%rest_normalizations.content_entity_operations_exclude%']
+  rest_normalizations.normalizer.entity_reference_field_item_field_target:
+    class: Drupal\rest_normalizations\Normalizer\EntityReferenceFieldItemFieldTargetNormalizer
+    tags:
+      - { name: normalizer, priority: 25 }
+    arguments: ['@language_manager', '%rest_normalizations.field_target_identifiers%']
 
   rest_normalizations.ts_generator_component.entity_file:
     class: Drupal\rest_normalizations\ComponentGenerator\FileGenerator
@@ -71,18 +76,24 @@ services:
   rest_normalizations.ts_generator_component.field.entity_reference_target:
     class: Drupal\rest_normalizations\ComponentGenerator\EntityReferenceTargetFieldGenerator
     tags:
-      - { name: ts_generator_component, priority: 21 }
+      - { name: ts_generator_component, priority: 22 }
     arguments: ['@plugin.manager.field.field_type', '@entity_type.manager', '%rest_normalizations.target_identifiers%']
   rest_normalizations.ts_generator_component.field.file:
     class: Drupal\rest_normalizations\ComponentGenerator\FileFieldGenerator
     tags:
-      - { name: ts_generator_component, priority: 22 }
+      - { name: ts_generator_component, priority: 23 }
     arguments: ['@plugin.manager.field.field_type', '@entity_type.manager', '%rest_normalizations.target_identifiers%']
+  rest_normalizations.ts_generator_component.field.entity_reference_target_field:
+    class: Drupal\rest_normalizations\ComponentGenerator\EntityReferenceTargetFieldFieldGenerator
+    tags:
+      - { name: ts_generator_component, priority: 21 }
+    arguments: ['@plugin.manager.field.field_type', '@entity_type.manager', '%rest_normalizations.field_target_identifiers%']
 
 parameters:
   rest_normalizations.target_identifiers:
     - media
     - file
     - paragraph
+  rest_normalizations.field_target_identifiers: {}
   rest_normalizations.content_entity_operations_exclude:
     - commerce_product_variation
