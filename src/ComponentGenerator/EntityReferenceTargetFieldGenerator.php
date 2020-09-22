@@ -154,11 +154,11 @@ class EntityReferenceTargetFieldGenerator extends EntityReferenceFieldGenerator 
     $item_target_type = implode(' | ', array_diff(array_map('trim', explode('|', $item_target_type)), array('undefined')));
 
     $item_properties = $this->getItemProperties($object, $settings, $result, $componentResult);
-    $item_mapping = $this->getItemMapping($object, $properties, $settings, $result, $componentResult);
+    $item_mapping = $this->getItemMapping($object, $item_properties, $settings, $result, $componentResult);
 
     $item_parser = $componentResult->getContext('item')->getComponent('parser');
     $item_guard = $componentResult->getContext('item')->getComponent('guard');
-    
+
     if ($object->getFieldStorageDefinition()->getCardinality() == 1) {
       if ($object->isRequired()) {
         $name = 'singular_required_' . Container::underscore($this->getName($object, $settings, $result, $componentResult)) . '_parser';

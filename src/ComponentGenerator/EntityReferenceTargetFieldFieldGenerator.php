@@ -2,6 +2,7 @@
 
 namespace Drupal\rest_normalizations\ComponentGenerator;
 
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldConfigInterface;
 use Drupal\Core\Field\FieldTypePluginManagerInterface;
@@ -18,8 +19,15 @@ class EntityReferenceTargetFieldFieldGenerator extends EntityReferenceFieldGener
    */
   protected $field_target_identifiers;
 
-  public function __construct(FieldTypePluginManagerInterface $fieldTypePluginManager, EntityTypeManagerInterface $entityTypeManager, $field_target_identifiers) {
+  /**
+   * @var EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  public function __construct(FieldTypePluginManagerInterface $fieldTypePluginManager, EntityTypeManagerInterface $entityTypeManager, EntityFieldManagerInterface $entityFieldManager, $field_target_identifiers) {
     parent::__construct($fieldTypePluginManager, $entityTypeManager);
+
+    $this->entityFieldManager = $entityFieldManager;
     $this->field_target_identifiers = $field_target_identifiers;
   }
 
@@ -31,6 +39,12 @@ class EntityReferenceTargetFieldFieldGenerator extends EntityReferenceFieldGener
     return !!$this->getFieldData($object);
   }
 
+  /**
+   * Generate name suffix and field target identifiers.
+   *
+   * @param $object
+   * @return [string, array]|bool
+   */
   protected function getFieldData($object) {
     if (isset($this->field_target_identifiers[$object->getSettings()['target_type']])) {
       return [
@@ -64,12 +78,6 @@ class EntityReferenceTargetFieldFieldGenerator extends EntityReferenceFieldGener
 
     $properties['target'] = $component_result->getContext('target');
 
-//    list(, $field_identifiers) = $this->getFieldData($object);
-//    foreach ($field_identifiers as $field_names) {
-//      $properties[$field_names] = 'string'; // $this->generator->generate($object, $settings, $result, $component_result);
-//    }
-
-
     return $properties;
   }
 
@@ -78,39 +86,14 @@ class EntityReferenceTargetFieldFieldGenerator extends EntityReferenceFieldGener
 
     $mapping['target'] = 'target';
 
-//    $field_identifiers = array_values($this->field_target_identifiers)[0];
-//    foreach($field_identifiers as $field) {
-//      $mapping[$field] = $field;
-//    }
     return $mapping;
   }
 
   protected function getName($object, Settings $settings, Result $result, ComponentResult $component_result) {
     /** @var \Drupal\Core\Field\FieldDefinitionInterface $object */
-    // $entity_type = $this->entityTypeManager->getDefinition($object->getSettings()['target_type']);
-
     $name = parent::getName($object, $settings, $result, $component_result);
     list($name_suffix, ) = $this->getFieldData($object);
     return $name . $name_suffix;
-
-    // return $name . Container::camelize($object->getTargetEntityTypeId()) . Container::camelize($object->getName());
-
-
-//    if (!($object instanceof FieldConfigInterface)) {
-//      return $name;
-//    }
-//
-//    $handler = $object->getSetting('handler');
-//    if ($handler !== 'default:' . $entity_type->id()) {
-//      return $name;
-//    }
-//
-//    $handler_settings = $object->getSetting('handler_settings');
-//    if (empty($handler_settings) || empty($handler_settings['target_bundles'])) {
-//      return $name;
-//    }
-//
-//    return $name . Container::camelize($object->getTargetEntityTypeId()) . Container::camelize($object->getTargetBundle()) . Container::camelize($object->getName());
   }
 
   public function getBundles($object) {
@@ -172,55 +155,186 @@ class EntityReferenceTargetFieldFieldGenerator extends EntityReferenceFieldGener
     return $bundles;
   }
 
-  public function generateTarget($object, Settings $settings, Result $result, ComponentResult $componentResult) {
+  public function generateTargetFromBundles($object, Settings $settings, Result $result, ComponentResult $componentResult) {
     $name = $this->getName($object, $settings, $result, $componentResult) . 'Target';
 
-    $bundles = $this->getBundles($object, $settings, $result, $componentResult);
-    if ($bundles) {
-      $targetComponentResult = new ComponentResult();
-      $bundles_results = $componentResult->getContext('bundles');
+    $targetComponentResult = new ComponentResult();
+    $bundles_results = $componentResult->getContext('bundles');
 
-      $type = $targetComponentResult->setComponent('type', $result->setComponent(
-        'types/' . $name,
-        'type ' . $name . " = " . $this->generateUnionObject($bundles_results, 'type')
+    $type = $targetComponentResult->setComponent('type', $result->setComponent(
+      'types/' . $name,
+      'type ' . $name . " = " . $this->generateUnionObject($bundles_results, 'type')
+    ));
+    if ($settings->generateParser()) {
+      $target_type = $targetComponentResult->setComponent('target_type', $result->setComponent(
+        'types/Parsed' . $name,
+        'type Parsed' . $name . " = " . $this->generateUnionObject($bundles_results, 'target_type')
       ));
-      if ($settings->generateParser()) {
-        $target_type = $targetComponentResult->setComponent('target_type', $result->setComponent(
-          'types/Parsed' . $name,
-          'type Parsed' . $name . " = " . $this->generateUnionObject($bundles_results, 'target_type')
-        ));
-        $targetComponentResult->setComponent('parser', $result->setComponent(
-          'parser/' . Container::underscore($name) . '_parser',
-          'const ' . Container::underscore($name) . '_parser' . ' = ' . $this->generateUnionParser(
-            $bundles_results,
-            $type,
-            $target_type
-          )
-        ));
-      }
-
-      return $targetComponentResult;
-
-    } else {
-
+      $targetComponentResult->setComponent('parser', $result->setComponent(
+        'parser/' . Container::underscore($name) . '_parser',
+        'const ' . Container::underscore($name) . '_parser' . ' = ' . $this->generateUnionParser(
+          $bundles_results,
+          $type,
+          $target_type
+        )
+      ));
     }
 
+    return $targetComponentResult;
+  }
 
+  public function preGenerateTargetWithoutBundles($object, Settings $settings, Result $result, ComponentResult $componentResult) {
+    $name = $this->getName($object, $settings, $result, $componentResult) . 'Target';
+
+    return new ComponentResult([
+      'type' => ':types/' . $name . ':',
+      'target_type' => ':types/Parsed' . $name . ':',
+      'parser' => ':parser/' . Container::underscore($name) . '_parser:'
+    ]);
+  }
+
+  public function generateTargetWithoutBundles($object, Settings $settings, Result $result, ComponentResult $componentResult) {
+    $name = $this->getName($object, $settings, $result, $componentResult) . 'Target';
+    list(, $field_target_identifiers) = $this->getFieldData($object);
+
+    $entity_type_id = $object->getSettings()['target_type'];
+    $base_field_definitions = $this->entityFieldManager->getBaseFieldDefinitions($entity_type_id);
+
+    $properties = [];
+    $mapping = [];
+
+    foreach ($base_field_definitions as $key => $field_definition) {
+      if ($field_definition->isInternal()) {
+        continue;
+      }
+
+      if (!in_array($key, $field_target_identifiers)) {
+        continue;
+      }
+
+      $property_value = $this->generator->generate($field_definition, $settings, $result);
+      $properties[$key] = $property_value;
+      $mapping[$key] = $key;
+    }
+
+    return $this->generatePropertiesComponentResult(
+      $properties,
+      $name,
+      'Parsed' . $name,
+      Container::underscore($name) . '_parser',
+      $mapping,
+      $settings,
+      $result
+    );
+  }
+
+    /**
+   * @param $object
+   * @param Settings $settings
+   * @param Result $result
+   * @param ComponentResult $componentResult
+   * @return array|bool
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   */
+  public function generateBundles($object, Settings $settings, Result $result, ComponentResult $componentResult) {
+    $bundle_list = $this->getBundles($object);
+    if (!$bundle_list) {
+      return FALSE;
+    }
+
+    $bundles = [];
+    foreach ($bundle_list as $bundle) {
+      $bundles[$bundle->id()] = $this->generateBundle($object, $bundle, $settings, $result, $componentResult);
+    }
+    return $bundles;
+  }
+
+  /**
+   * @param $object
+   * @param $bundle
+   * @param Settings $settings
+   * @param Result $result
+   * @param ComponentResult $componentResult
+   *
+   */
+  public function generateBundle($object, $bundle, Settings $settings, Result $result, ComponentResult $componentResult) {
+    list(, $field_target_identifiers) = $this->getFieldData($object);
+
+    $entity_type_id = $object->getSettings()['target_type'];
+    $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
+
+    $bundle_id = $bundle->id();
+
+    $base_field_definitions = $this->entityFieldManager->getBaseFieldDefinitions($entity_type_id);
+    $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type_id, $bundle_id);
+
+    $_bundle_field_type = $this->generator->generate($base_field_definitions[$entity_type->getKey('bundle')], $settings, $result);
+    $bundle_field_type = $_bundle_field_type->getComponent('wrapper_type') . '<' . $_bundle_field_type->getComponent('specific_item_type') . "<" . json_encode($bundle_id) . ">>";
+
+    $properties = [
+      $entity_type->getKey('bundle') => new ComponentResult([
+        'type' => $bundle_field_type,
+        'target_type' => json_encode($bundle_id),
+        'parser' => '((_: any): ' . json_encode($bundle_id) . ' => ' . json_encode($bundle_id) . ')',
+        'guard' => '((t: any): t is ' . $bundle_field_type . ' => Array.isArray(t) && t[0] !== undefined && t[0].target_id !== undefined && t[0].target_id === ' . json_encode($bundle_id) . ')'
+      ])
+    ];
+    $mapping = [
+      'bundle' => $entity_type->getKey('bundle'),
+    ];
+
+    foreach ($field_definitions as $key => $field_definition) {
+      if ($field_definition->isInternal()) {
+        continue;
+      }
+
+      if (!in_array($key, $field_target_identifiers)) {
+        continue;
+      }
+
+      $property_value = $this->generator->generate($field_definition, $settings, $result);
+      $properties[$key] = $property_value;
+      $mapping[$key] = $key;
+    }
+
+    $name = $this->getName($object, $settings, $result, $componentResult) . 'Target' . Container::camelize($bundle->id());
+
+    return $this->generatePropertiesComponentResult(
+      $properties,
+      $name,
+      'Parsed' . $name,
+      Container::underscore($name) . '_parser',
+      $mapping,
+      $settings,
+      $result,
+      Container::underscore($name) . '_guard'
+    );
   }
 
   protected function preGenerate($object, Settings $settings, Result $result, ComponentResult $componentResult) {
-    $bundles = $componentResult->getContext('bundles');
-    if (!isset($bundles)) {
-      $bundles = $this->preGenerateBundles($object, $settings, $result, $componentResult);
-      $componentResult->setContext('bundles', $bundles);
-//      $bundles = $this->generateBundles($object, $settings, $result, $componentResult);
-//      $componentResult->setContext('bundles', $bundles);
-    }
+    $bundle_list = $this->getBundles($object);
+    if ($bundle_list) {
+      $bundles = $componentResult->getContext('bundles');
+      if (!isset($bundles)) {
+        $bundles = $this->preGenerateBundles($object, $settings, $result, $componentResult);
+        $componentResult->setContext('bundles', $bundles);
+        $bundles = $this->generateBundles($object, $settings, $result, $componentResult);
+        $componentResult->setContext('bundles', $bundles);
+      }
 
-    $target = $componentResult->getContext('target');
-    if (!$target) {
-      $target = $this->generateTarget($object, $settings, $result, $componentResult);
-      $componentResult->setContext('target', $target);
+      $target = $componentResult->getContext('target');
+      if (!$target) {
+        $target = $this->generateTargetFromBundles($object, $settings, $result, $componentResult);
+        $componentResult->setContext('target', $target);
+      }
+    } else {
+      $target = $componentResult->getContext('target');
+      if (!$target) {
+        $target = $this->preGenerateTargetWithoutBundles($object, $settings, $result, $componentResult);
+        $componentResult->setContext('target', $target);
+        $target = $this->generateTargetWithoutBundles($object, $settings, $result, $componentResult);
+        $componentResult->setContext('target', $target);
+      }
     }
 
     parent::preGenerate($object, $settings, $result, $componentResult);

@@ -87,7 +87,7 @@ services:
     class: Drupal\rest_normalizations\ComponentGenerator\EntityReferenceTargetFieldFieldGenerator
     tags:
       - { name: ts_generator_component, priority: 21 }
-    arguments: ['@plugin.manager.field.field_type', '@entity_type.manager', '%rest_normalizations.field_target_identifiers%']
+    arguments: ['@plugin.manager.field.field_type', '@entity_type.manager', '@entity_field.manager', '%rest_normalizations.field_target_identifiers%']
 
 parameters:
   rest_normalizations.target_identifiers:
