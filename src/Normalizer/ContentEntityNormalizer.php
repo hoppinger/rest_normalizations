@@ -18,7 +18,7 @@ class ContentEntityNormalizer extends BaseNormalizer {
   protected $exclude_operations;
 
   public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityTypeRepositoryInterface $entity_type_repository = NULL, EntityFieldManagerInterface $entity_field_manager = NULL, $exclude_operations) {
-    parent::__construct($entity_type_manager);
+    parent::__construct($entity_type_manager, $entity_type_repository, $entity_field_manager);
 
     $this->exclude_operations = $exclude_operations;
   }
@@ -41,7 +41,9 @@ class ContentEntityNormalizer extends BaseNormalizer {
 
     $data['language_links'] = [];
     foreach ($object->getTranslationLanguages() as $language) {
-      $data['language_links'][$language->getId()] = $object->getTranslation($language->getId())->url('canonical');
+      if ($object->hasLinkTemplate('canonical') && $url = $object->getTranslation($language->getId())->toUrl('canonical')->toString(TRUE)) {
+        $data['language_links'][$language->getId()] = $url->getGeneratedUrl();
+      }
     }
 
     $currentUser = \Drupal::currentUser();
