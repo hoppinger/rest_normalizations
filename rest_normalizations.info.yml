@@ -1,7 +1,6 @@
 name: Rest Normalizations
 type: module
 description: Hoppinger Normalizations for the REST API
-core: 8.x
 core_version_requirement: ^8 || ^9
 package: Hoppinger
 dependencies:

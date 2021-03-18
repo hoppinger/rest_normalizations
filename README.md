@@ -11,7 +11,6 @@ composer require hoppinger/rest_normalizations
 ## Version compatibiliy
 
 Version 1.4.0 and up are only compatible with Drupal 8.7.0 and up, and older versions are not compatible with Drupal 8.7.0 and up.
-Version 2.0.0 are compatible with Drupal 9.x
 
 ## Usage
 

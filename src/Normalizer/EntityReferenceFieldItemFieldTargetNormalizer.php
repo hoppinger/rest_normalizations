@@ -2,21 +2,22 @@
 
 namespace Drupal\rest_normalizations\Normalizer;
 
-use Drupal\Core\Entity\EntityRepositoryInterface;
-use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Language\LanguageInterface;
-use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal;
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\TypedData\TranslatableInterface;
+use Drupal\Core\TypedData\TypedDataInternalPropertiesHelper;
 
-class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemNormalizer {
+class EntityReferenceFieldItemFieldTargetNormalizer extends EntityReferenceFieldItemNormalizer {
+
   /**
-   * @var string[]
+   * @var array[]
    */
-  protected $target_identifiers;
+  protected $field_target_identifiers;
 
-  public function __construct(LanguageManagerInterface $languageManager, $target_identifiers) {
+  public function __construct(LanguageManagerInterface $languageManager, $field_target_identifiers) {
     parent::__construct($languageManager);
-    $this->target_identifiers = $target_identifiers;
+    $this->field_target_identifiers = $field_target_identifiers;
   }
 
   public function supportsNormalization($data, $format = NULL) {
@@ -24,6 +25,10 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
       return FALSE;
     }
 
+    return !!$this->getFieldData($data);
+  }
+
+  protected function getFieldData($data) {
     $entity = $data->get('entity')->getValue();
     if (!$entity) {
       return FALSE;
@@ -38,25 +43,45 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
       ) : NULL,
     ]);
 
-    return !!array_intersect($field_entity_identifiers, $this->target_identifiers);
+    foreach ($field_entity_identifiers as $field_entity_identifier) {
+      if (isset($this->field_target_identifiers[$field_entity_identifier])) {
+        return $this->field_target_identifiers[$field_entity_identifier];
+      }
+    }
+
+    return FALSE;
   }
 
   public function normalize($field_item, $format = NULL, array $context = []) {
     $values = parent::normalize($field_item, $format, $context);
+    $field_identifiers = $this->getFieldData($field_item);
 
     $langcode = $this->languageManager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
-
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
     if ($entity = $field_item->get('entity')->getValue()) {
 
       if ($entity instanceof TranslatableInterface) {
         $entity = \Drupal::service('entity.repository')->getTranslationFromContext($entity, $langcode);
       }
-      
-      $this->addCacheableDependency($context, $entity);
-      $values['target'] = $this->serializer->normalize($entity, $format, $context);
-    }
 
+      $entity_type = $entity->getEntityType();
+
+      $this->addCacheableDependency($context, $entity);
+
+      $target = (object) [];
+
+      /** @var \Drupal\Core\Entity\Entity $entity */
+      foreach (TypedDataInternalPropertiesHelper::getNonInternalProperties($entity->getTypedData()) as $name => $field_items) {
+        if ($field_items->access('view', $context['account']) && (
+          in_array($name, $field_identifiers) ||
+          $name == $entity_type->getKey('bundle')
+        )) {
+          $target->{$name} = $this->serializer->normalize($field_items, $format, $context);
+        }
+      }
+
+      $values['target'] = $target;
+    }
     return $values;
   }
 }
