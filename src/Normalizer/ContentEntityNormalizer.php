@@ -24,15 +24,16 @@ class ContentEntityNormalizer extends BaseNormalizer {
   }
 
   protected function operationsExcluded($entity_type_id) {
-    foreach ($this->exclude_operations as $exclude_operation) {
-      $exclude_operation_regex = '/' . implode('.*', array_map(function($x) {
-        return preg_quote($x, '/');
-      }, explode('*', $exclude_operation))) . '/';
-      if (preg_match($exclude_operation_regex, $entity_type_id)) {
-        return TRUE;
+    if($this->exclude_operations) {
+      foreach ($this->exclude_operations as $exclude_operation) {
+        $exclude_operation_regex = '/' . implode('.*', array_map(function($x) {
+          return preg_quote($x, '/');
+        }, explode('*', $exclude_operation))) . '/';
+        if (preg_match($exclude_operation_regex, $entity_type_id)) {
+          return TRUE;
+        }
       }
     }
-
     return FALSE;
   }
 
