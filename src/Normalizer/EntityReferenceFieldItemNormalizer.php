@@ -42,6 +42,8 @@ class EntityReferenceFieldItemNormalizer extends FieldItemNormalizer {
       // parameter value to 'edit-form.
       if ($entity->hasLinkTemplate('canonical') && !$entity->isNew() && $url = $entity->toUrl('canonical')->toString(TRUE)) {
         $values['url'] = $url->getGeneratedUrl();
+      } elseif ($entity->getEntityTypeId() === 'file' && $entity->access('download')) {
+        $values['url'] = Drupal\Core\Url::fromUri(file_create_url($entity->getFileUri()))->toString();
       }
 
       $values['target_label'] = $entity->label();
