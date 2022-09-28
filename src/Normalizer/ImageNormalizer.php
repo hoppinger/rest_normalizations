@@ -19,6 +19,11 @@ class ImageNormalizer extends ContentEntityNormalizer {
       return FALSE;
     }
 
+    //Prevent styles on gif images
+    if ($mimetype[1] == 'gif') {
+      return FALSE;
+    }
+
     return TRUE;
   }
 
