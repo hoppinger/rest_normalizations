@@ -24,6 +24,11 @@ class ImageNormalizer extends ContentEntityNormalizer {
       return FALSE;
     }
 
+    //Prevent styles on svg images
+    if ($mimetype[1] == 'svg+xml') {
+      return FALSE;
+    }
+
     return TRUE;
   }
 
