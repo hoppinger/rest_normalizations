@@ -45,4 +45,11 @@ class ImageNormalizer extends ContentEntityNormalizer {
 
     return $data;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function hasCacheableSupportsMethod(): bool {
+    return FALSE;
+  }
 }
