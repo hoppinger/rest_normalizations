@@ -9,8 +9,8 @@ use Drupal;
 class ImageNormalizer extends ContentEntityNormalizer {
   protected $supportedInterfaceOrClass = 'Drupal\file\FileInterface';
 
-	public function supportsNormalization($data, $format = NULL) {
-    if (!parent::supportsNormalization($data, $format)) {
+	public function supportsNormalization($data, ?string $format = NULL, array $context = []): bool {
+    if (!parent::supportsNormalization($data, $format, $context)) {
       return FALSE;
     }
 
@@ -32,7 +32,7 @@ class ImageNormalizer extends ContentEntityNormalizer {
     return TRUE;
   }
 
-  public function normalize($entity, $format = NULL, array $context = []) {
+  public function normalize($entity, $format = NULL, array $context = []): \ArrayObject|array|string|int|float|bool|null  {
     $data = parent::normalize($entity, $format, $context);
 
     $path = $entity->getFileUri();

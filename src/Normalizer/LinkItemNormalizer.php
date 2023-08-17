@@ -14,7 +14,7 @@ class LinkItemNormalizer extends FieldItemNormalizer {
    */
   protected $supportedInterfaceOrClass = LinkItem::class;
 
-  public function normalize($field_item, $format = NULL, array $context = []) {
+  public function normalize($field_item, $format = NULL, array $context = []): \ArrayObject|array|string|int|float|bool|null {
     /** @var \Drupal\link\Plugin\Field\FieldType\LinkItem $field_item */
     $values = parent::normalize($field_item, $format, $context);
     $values['processed_url'] = $field_item->getUrl()->toString();

@@ -22,7 +22,7 @@ class EntityReferenceFieldItemNormalizer extends FieldItemNormalizer {
     $this->languageManager = $languageManager;
   }
 
-  public function normalize($field_item, $format = NULL, array $context = []) {
+  public function normalize($field_item, $format = null, array $context = []): \ArrayObject|array|string|int|float|bool|null {
     $values = parent::normalize($field_item, $format, $context);
 
     $langcode = $this->languageManager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
@@ -43,7 +43,7 @@ class EntityReferenceFieldItemNormalizer extends FieldItemNormalizer {
       if ($entity->hasLinkTemplate('canonical') && !$entity->isNew() && $url = $entity->toUrl('canonical')->toString(TRUE)) {
         $values['url'] = $url->getGeneratedUrl();
       } elseif ($entity->getEntityTypeId() === 'file' && $entity->access('download')) {
-        $values['url'] = Drupal\Core\Url::fromUri(file_create_url($entity->getFileUri()))->toString();
+        $values['url'] = Drupal\Core\Url::fromUri(\Drupal::service('file_url_generator')->generateAbsoluteString($entity->getFileUri()))->toString();
       }
 
       $values['target_label'] = $entity->label();

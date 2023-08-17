@@ -20,8 +20,8 @@ class EntityReferenceFieldItemFieldTargetNormalizer extends EntityReferenceField
     $this->field_target_identifiers = $field_target_identifiers;
   }
 
-  public function supportsNormalization($data, $format = NULL) {
-    if (!parent::supportsNormalization($data, $format)) {
+  public function supportsNormalization($data, ?string $format = NULL, array $context = []): bool {
+    if (!parent::supportsNormalization($data, $format, $context)) {
       return FALSE;
     }
 
@@ -52,7 +52,7 @@ class EntityReferenceFieldItemFieldTargetNormalizer extends EntityReferenceField
     return FALSE;
   }
 
-  public function normalize($field_item, $format = NULL, array $context = []) {
+  public function normalize($field_item, $format = NULL, array $context = []): \ArrayObject|array|string|int|float|bool|null {
     $values = parent::normalize($field_item, $format, $context);
     $field_identifiers = $this->getFieldData($field_item);
 

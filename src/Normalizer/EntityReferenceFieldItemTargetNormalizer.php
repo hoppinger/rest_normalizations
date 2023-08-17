@@ -19,8 +19,8 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
     $this->target_identifiers = $target_identifiers;
   }
 
-  public function supportsNormalization($data, $format = NULL) {
-    if (!parent::supportsNormalization($data, $format)) {
+  public function supportsNormalization($data, ?string $format = NULL, array $context = []): bool {
+    if (!parent::supportsNormalization($data, $format, $context)) {
       return FALSE;
     }
 
@@ -41,7 +41,7 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
     return !!array_intersect($field_entity_identifiers, $this->target_identifiers);
   }
 
-  public function normalize($field_item, $format = NULL, array $context = []) {
+  public function normalize($field_item, $format = NULL, array $context = []): \ArrayObject|array|string|int|float|bool|null {
     $values = parent::normalize($field_item, $format, $context);
 
     $langcode = $this->languageManager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
