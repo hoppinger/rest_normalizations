@@ -9,14 +9,17 @@ class RedirectDestination extends BaseRedirectDestination {
   public function get() {
     if (!isset($this->destination)) {
       $query = $this->requestStack->getCurrentRequest()->query;
-      if (!$query->has('destination')) {
-        $this->destination = $this->urlGenerator->generateFromRoute('<current>', [], ['query' => UrlHelper::filterQueryParameters($query->all(), ['_format'])]);
-      }
-      elseif (UrlHelper::isExternal($query->get('destination'))) {
-        $this->destination = '/';
+
+      if ($query->has('destination')) {
+        if (UrlHelper::isExternal($query->get('destination'))) {
+          $this->destination = '/';
+        }
+        else {
+          $this->destination = $query->get('destination');
+        }
       }
       else {
-        $this->destination = $query->get('destination');
+        $this->destination = $this->urlGenerator->generateFromRoute('<current>', [], ['query' => UrlHelper::filterQueryParameters($query->all(), ['_format'])]);
       }
     }
 
