@@ -11,5 +11,8 @@
       "role": "Maintainer"
     }
   ],
-  "require": {}
+  "require": {
+    "php": ">=7.3",
+    "drupal/core": "^8 || ^9"
+  }
 }
