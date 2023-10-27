@@ -9,6 +9,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityTypeRepositoryInterface;
 use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Drupal\serialization\Normalizer\ContentEntityNormalizer as BaseNormalizer;
+use Drupal\Core\TypedData\TypedDataInternalPropertiesHelper;
+use Drupal\paragraphs\Entity\Paragraph;
 
 
 class ContentEntityNormalizer extends BaseNormalizer {
@@ -38,25 +40,58 @@ class ContentEntityNormalizer extends BaseNormalizer {
   }
 
   public function normalize($object, $format = NULL, array $context = []) {
-    $data = parent::normalize($object, $format, $context);
+    $context += [
+      'account' => NULL,
+    ];
+
+    $fields = [
+      'nid', 'langcode', 'type', 'status', 'title', 'created', 'changed', 'moderation_state', 
+      'metatag', 'path', 'tid', 'name', 'description', 'parent', 'weight', 'default_langcode', 'revision_id'
+    ];
+
+    $data = [];
+
+    /** @var \Drupal\Core\Entity\Entity $entity */
+    foreach (TypedDataInternalPropertiesHelper::getNonInternalProperties($entity->getTypedData()) as $name => $field_items) {
+      $normalize = FALSE;
+      if ($field_items->access('view', $context['account'])) {
+        $data[$name] = $this->serializer->normalize($field_items, $format, $context);
+      }
+
+      if ($field_items->access('view', $context['account'])) {
+        if(str_starts_with($name, 'field_') && $context['level'] > 1 ) {
+          $normalize = TRUE;
+        }
+        elseif($entity instanceof Paragraph) {
+          continue;
+        }
+        elseif((in_array($name, $fields))) {
+          $normalize = TRUE;
+        }
+      }
+
+      if($normalize) {
+        $data[$name] = $this->serializer->normalize($field_items, $format, $context);
+      }
+    }
 
     $data['language_links'] = [];
-    foreach ($object->getTranslationLanguages() as $language) {
-      if ($object->hasLinkTemplate('canonical') && $url = $object->getTranslation($language->getId())->toUrl('canonical')->toString(TRUE)) {
+    foreach ($entity->getTranslationLanguages() as $language) {
+      if ($entity->hasLinkTemplate('canonical') && $url = $entity->getTranslation($language->getId())->toUrl('canonical')->toString(TRUE)) {
         $data['language_links'][$language->getId()] = $url->getGeneratedUrl();
       }
     }
 
     $currentUser = \Drupal::currentUser();
 
-    if (!$this->operationsExcluded($object->getEntityTypeId()) && $currentUser->hasPermission('view entity operations in rest')) {
+    if (!$this->operationsExcluded($entity->getEntityTypeId()) && $currentUser->hasPermission('view entity operations in rest')) {
       try {
-        $listBuilder = $this->entityTypeManager->getListBuilder($object->getEntityTypeId());
+        $listBuilder = $this->entityTypeManager->getListBuilder($entity->getEntityTypeId());
       } catch (InvalidPluginDefinitionException $e) {
         return $data;
       }
       
-      $operations = $listBuilder->getOperations($object);
+      $operations = $listBuilder->getOperations($entity);
       $data['entity_operations'] = $operations ? [] : new StdClass;
       foreach ($operations as $key => $operation) {
         $data['entity_operations'][$key] = [

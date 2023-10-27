@@ -7,6 +7,7 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal;
+use Drupal\paragraphs\Entity\Paragraph;
 
 class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemNormalizer {
   /**
@@ -54,9 +55,28 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
       }
       
       $this->addCacheableDependency($context, $entity);
-      $values['target'] = $this->serializer->normalize($entity, $format, $context);
+      if(!isset($context['included_field'])) {
+        $context['included_field'] = [];
+        $context['level'] = 1;
+      }
+
+      if(!in_array($field_item->getFieldDefinition()->getName(), $context['included_field'])) {
+        $context['included_field'][] = $field_item->getFieldDefinition()->getName();
+        if(!($entity instanceof Paragraph)) {
+          $context['level']++;
+        }
+        $values['target'] = $this->serializer->normalize($entity, $format, $context);
+      }
+
     }
 
     return $values;
+  }
+  
+  /**
+   * {@inheritdoc}
+   */
+  public function hasCacheableSupportsMethod(): bool {
+    return FALSE;
   }
 }
