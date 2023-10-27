@@ -12,7 +12,6 @@ use Drupal\serialization\Normalizer\ContentEntityNormalizer as BaseNormalizer;
 use Drupal\Core\TypedData\TypedDataInternalPropertiesHelper;
 use Drupal\paragraphs\Entity\Paragraph;
 
-
 class ContentEntityNormalizer extends BaseNormalizer {
   /**
    * @var string[]
@@ -39,7 +38,7 @@ class ContentEntityNormalizer extends BaseNormalizer {
     return FALSE;
   }
 
-  public function normalize($object, $format = NULL, array $context = []) {
+  public function normalize($entity, $format = NULL, array $context = []) {
     $context += [
       'account' => NULL,
     ];
