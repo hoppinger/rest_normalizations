@@ -53,9 +53,6 @@ class ContentEntityNormalizer extends BaseNormalizer {
     /** @var \Drupal\Core\Entity\Entity $entity */
     foreach (TypedDataInternalPropertiesHelper::getNonInternalProperties($entity->getTypedData()) as $name => $field_items) {
       $normalize = FALSE;
-      if ($field_items->access('view', $context['account'])) {
-        $data[$name] = $this->serializer->normalize($field_items, $format, $context);
-      }
 
       if ($field_items->access('view', $context['account'])) {
         if(str_starts_with($name, 'field_') && $context['level'] > 1 ) {
