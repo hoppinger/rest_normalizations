@@ -11,6 +11,7 @@ use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Drupal\serialization\Normalizer\ContentEntityNormalizer as BaseNormalizer;
 use Drupal\Core\TypedData\TypedDataInternalPropertiesHelper;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\media\Entity\Media;
 
 class ContentEntityNormalizer extends BaseNormalizer {
   /**
@@ -49,13 +50,22 @@ class ContentEntityNormalizer extends BaseNormalizer {
     ];
 
     $data = [];
+    if(!isset($context['level'])) {
+      $context['level'] = 1;
+    }
 
     /** @var \Drupal\Core\Entity\Entity $entity */
     foreach (TypedDataInternalPropertiesHelper::getNonInternalProperties($entity->getTypedData()) as $name => $field_items) {
       $normalize = FALSE;
+      // if ($field_items->access('view', $context['account'])) {
+      //   $data[$name] = $this->serializer->normalize($field_items, $format, $context);
+      // }
 
       if ($field_items->access('view', $context['account'])) {
-        if(str_starts_with($name, 'field_') && $context['level'] > 1 ) {
+        if ($entity instanceof Media) {
+          $normalize = TRUE;
+        }
+        elseif(str_starts_with($name, 'field_') && $context['level'] == 1) {
           $normalize = TRUE;
         }
         elseif($entity instanceof Paragraph) {

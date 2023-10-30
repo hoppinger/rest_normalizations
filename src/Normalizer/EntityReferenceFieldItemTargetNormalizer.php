@@ -47,6 +47,10 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
 
     $langcode = $this->languageManager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
 
+    $unsafe_fields = [
+      'thumbnail',
+    ];
+
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
     if ($entity = $field_item->get('entity')->getValue()) {
 
@@ -55,13 +59,16 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
       }
       
       $this->addCacheableDependency($context, $entity);
-      if(!isset($context['included_field'])) {
-        $context['included_field'] = [];
+
+      if(!isset($context['already_included_fields'])) {
+        $context['already_included_fields'] = [];
         $context['level'] = 1;
       }
 
-      if(!in_array($field_item->getFieldDefinition()->getName(), $context['included_field'])) {
-        $context['included_field'][] = $field_item->getFieldDefinition()->getName();
+      if(!in_array($field_item->getFieldDefinition()->getName(), $context['already_included_fields']) && 
+        !in_array($field_item->getFieldDefinition()->getName(), $unsafe_fields)
+      ) {
+        $context['already_included_fields'][] = $field_item->getFieldDefinition()->getName();
         if(!($entity instanceof Paragraph)) {
           $context['level']++;
         }
@@ -72,7 +79,7 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
 
     return $values;
   }
-  
+
   /**
    * {@inheritdoc}
    */
