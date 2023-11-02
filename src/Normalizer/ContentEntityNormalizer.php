@@ -45,7 +45,7 @@ class ContentEntityNormalizer extends BaseNormalizer {
     ];
 
     $fields = [
-      'nid', 'langcode', 'type', 'status', 'title', 'created', 'changed', 'moderation_state', 
+      'nid', 'langcode', 'type', 'status', 'title', 'created', 'changed', 'moderation_state', 'type',
       'metatag', 'path', 'tid', 'name', 'description', 'parent', 'weight', 'default_langcode', 'revision_id'
     ];
 
@@ -68,10 +68,10 @@ class ContentEntityNormalizer extends BaseNormalizer {
         elseif(str_starts_with($name, 'field_') && $context['level'] == 1) {
           $normalize = TRUE;
         }
-        elseif($entity instanceof Paragraph) {
+        elseif($entity instanceof Paragraph && !in_array($name, $fields)) {
           continue;
         }
-        elseif((in_array($name, $fields))) {
+        elseif(in_array($name, $fields)) {
           $normalize = TRUE;
         }
       }
