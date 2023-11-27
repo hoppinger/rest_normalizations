@@ -3,6 +3,7 @@ type: module
 description: Hoppinger Normalizations for the REST API
 core_version_requirement: ^8 || ^9
 package: Hoppinger
+configure: rest_normalizations.admin_settings_form
 dependencies:
   - serialization
   - paragraphs

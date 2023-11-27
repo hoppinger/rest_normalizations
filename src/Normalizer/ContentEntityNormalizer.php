@@ -45,7 +45,7 @@ class ContentEntityNormalizer extends BaseNormalizer {
     ];
 
     $fields = [
-      'nid', 'langcode', 'type', 'status', 'title', 'created', 'changed', 'moderation_state', 'type',
+      'nid', 'langcode', 'type', 'status', 'title', 'created', 'changed', 'moderation_state', 'type', 'parent_id',
       'metatag', 'path', 'tid', 'name', 'description', 'parent', 'weight', 'default_langcode', 'revision_id'
     ];
 
@@ -57,16 +57,28 @@ class ContentEntityNormalizer extends BaseNormalizer {
     /** @var \Drupal\Core\Entity\Entity $entity */
     foreach (TypedDataInternalPropertiesHelper::getNonInternalProperties($entity->getTypedData()) as $name => $field_items) {
       $normalize = FALSE;
-      // if ($field_items->access('view', $context['account'])) {
-      //   $data[$name] = $this->serializer->normalize($field_items, $format, $context);
-      // }
 
       if ($field_items->access('view', $context['account'])) {
         if ($entity instanceof Media) {
           $normalize = TRUE;
         }
-        elseif(str_starts_with($name, 'field_') && $context['level'] == 1) {
-          $normalize = TRUE;
+        elseif(str_starts_with($name, 'field_')) {
+          if($context['level'] == 1){
+            $normalize = TRUE;
+          }
+          else {
+            //Check if the field is coming from config form
+            $config = \Drupal::config('rest_normalizations.settings');
+            $settings = $config->get('rest_fields');
+            foreach($settings as $setting) {
+              if($entity->getEntityTypeId() == $setting['entity_type']) {
+                $fields = explode(',', $setting['entity_fields']);
+                if(in_array($name, $fields)) {
+                  $normalize = TRUE;
+                }
+              }
+            }
+          }
         }
         elseif($entity instanceof Paragraph && !in_array($name, $fields)) {
           continue;
