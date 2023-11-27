@@ -45,7 +45,7 @@ class ContentEntityNormalizer extends BaseNormalizer {
     ];
 
     $fields = [
-      'nid', 'langcode', 'type', 'status', 'title', 'created', 'changed', 'moderation_state', 'type', 'parent_id',
+      'nid', 'langcode', 'type', 'status', 'title', 'created', 'changed', 'moderation_state', 'type', 'parent_id', 'parent_field_name',
       'metatag', 'path', 'tid', 'name', 'description', 'parent', 'weight', 'default_langcode', 'revision_id'
     ];
 
