@@ -41,7 +41,7 @@ class RestNormalizations extends ConfigFormBase
 
     $form['description'] = [
       '#type' => 'item',
-      '#markup' => $this->t('This example shows an add-more and a remove-last button.'),
+      '#markup' => $this->t('Configuration form to add fields returned in REST reponse'),
     ];
 
     $count = $form_state->get('count') ? $form_state->get('count') : count($settings);
