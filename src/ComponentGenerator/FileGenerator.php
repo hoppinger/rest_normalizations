@@ -57,7 +57,7 @@ class FileGenerator extends EntityGenerator {
     $name = Container::camelize($object->id()) . 'Image';
 
     $properties = [
-      'style_urls' => $stylesResult,
+      'style_urls?' => $stylesResult,
     ];
     $mapping = [
       $baseResult,
