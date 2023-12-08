@@ -5,6 +5,7 @@ namespace Drupal\rest_normalizations\Normalizer;
 use Drupal\Core\Entity\Entity;
 use Drupal\file\Entity\File;
 use Drupal;
+use Drupal\file\FileInterface;
 
 class ImageNormalizer extends ContentEntityNormalizer {
   protected $supportedInterfaceOrClass = 'Drupal\file\FileInterface';
@@ -50,6 +51,14 @@ class ImageNormalizer extends ContentEntityNormalizer {
    * {@inheritdoc}
    */
   public function hasCacheableSupportsMethod(): bool {
-    return FALSE;
+    @trigger_error(__METHOD__ . '() is deprecated in drupal:10.1.0 and is removed from drupal:11.0.0. Use getSupportedTypes() instead. See https://www.drupal.org/node/3359695', E_USER_DEPRECATED);
+
+    return TRUE;
+  }
+
+  public function getSupportedTypes(?string $format): array {
+    return [
+      FileInterface::class => FALSE,
+    ];
   }
 }
