@@ -2,7 +2,6 @@
 
 namespace Drupal\rest_normalizations\Normalizer;
 
-use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
@@ -61,7 +60,7 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
         $context['level'] = 1;
       }
 
-      if(!in_array($field_item->getFieldDefinition()->getName(), $context['included_field'])) {
+      if(!in_array($field_item->getFieldDefinition()->getName(), $context['included_field']) || $context['level'] < 3) {
         $context['included_field'][] = $field_item->getFieldDefinition()->getName();
         if(!($entity instanceof Paragraph)) {
           $context['level']++;
