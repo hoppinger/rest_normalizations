@@ -65,21 +65,21 @@ class ContentEntityNormalizer extends BaseNormalizer {
           if($context['level'] < 3){
             $normalize = TRUE;
           }
-          // else {
-          //   //Check if the field is coming from config form
-          //   $config = \Drupal::config('rest_normalizations.settings');
-          //   $settings = $config->get('rest_fields');
-          //   if($settings) {
-          //     foreach($settings as $setting) {
-          //       if($entity->getEntityTypeId() == $setting['entity_type']) {
-          //         $fields = explode(',', $setting['entity_fields']);
-          //         if(in_array($name, $fields)) {
-          //           $normalize = TRUE;
-          //         }
-          //       }
-          //     }
-          //   }
-          // }
+          else {
+            //Check if the field is coming from config form
+            $config = \Drupal::config('rest_normalizations.settings');
+            $settings = $config->get('rest_fields');
+            if($settings) {
+              foreach($settings as $setting) {
+                if($entity->getEntityTypeId() == $setting['entity_type']) {
+                  $fields = explode(',', $setting['entity_fields']);
+                  if(in_array($name, $fields)) {
+                    $normalize = TRUE;
+                  }
+                }
+              }
+            }
+          }
         }
         elseif($entity instanceof Paragraph && !in_array($name, $fields)) {
           continue;
