@@ -6,3 +6,4 @@ package: Hoppinger
 dependencies:
   - serialization
   - paragraphs
+configure: rest_normalizations.admin_settings_form

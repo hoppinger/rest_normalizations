@@ -42,11 +42,15 @@ class ContentEntityNormalizer extends BaseNormalizer {
     $context += [
       'account' => NULL,
     ];
+    $fields = [];
 
-    $fields = [
-      'nid', 'uuid', 'vid', 'langcode', 'type', 'status', 'title', 'created', 'changed', 'moderation_state', 'type', 'parent_id', 'parent_field_name',
-      'metatag', 'path', 'tid', 'name', 'description', 'parent', 'weight', 'default_langcode', 'revision_id'
-    ];
+    $config = \Drupal::config('rest_normalizations.settings');
+    $settings = $config->get('rest_fields');
+    if ($settings) {
+      foreach($settings as $setting) {
+        $fields[$entity->getEntityTypeId()] = explode(',', $setting['entity_fields']);
+      }
+    }
 
     $data = [];
     if(!isset($context['level'])) {
@@ -61,35 +65,20 @@ class ContentEntityNormalizer extends BaseNormalizer {
         if ($entity instanceof Media) {
           $normalize = TRUE;
         }
-        elseif(str_starts_with($name, 'field_')) {
-          if($context['level'] < 3){
+        elseif (str_starts_with($name, 'field_')) {
+          if ($context['level'] < 3) {
             $normalize = TRUE;
           }
-          else {
-            //Check if the field is coming from config form
-            $config = \Drupal::config('rest_normalizations.settings');
-            $settings = $config->get('rest_fields');
-            if($settings) {
-              foreach($settings as $setting) {
-                if($entity->getEntityTypeId() == $setting['entity_type']) {
-                  $fields = explode(',', $setting['entity_fields']);
-                  if(in_array($name, $fields)) {
-                    $normalize = TRUE;
-                  }
-                }
-              }
-            }
-          }
         }
-        elseif($entity instanceof Paragraph && !in_array($name, $fields)) {
+        elseif ($entity instanceof Paragraph && !in_array($name, $fields)) {
           continue;
         }
-        elseif(in_array($name, $fields)) {
+        elseif ($entity && in_array($name, $fields[$entity->getEntityTypeId()])) {
           $normalize = TRUE;
         }
       }
 
-      if($normalize) {
+      if ($normalize) {
         $data[$name] = $this->serializer->normalize($field_items, $format, $context);
       }
     }
