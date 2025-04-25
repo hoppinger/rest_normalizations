@@ -55,16 +55,14 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
       
       $this->addCacheableDependency($context, $entity);
       
-      if(!isset($context['included_field'])) {
-        $context['included_field'] = [];
+      if(!isset($context['level'])) {
         $context['level'] = 1;
       }
 
       $config = \Drupal::config('rest_normalizations.settings');
       $max_level = $config->get('max_level');
 
-      if(!in_array($field_item->getFieldDefinition()->getName(), $context['included_field']) || $context['level'] <= $max_level) {
-        $context['included_field'][] = $field_item->getFieldDefinition()->getName();
+      if($context['level'] < $max_level) {
         if(!($entity instanceof Paragraph)) {
           $context['level']++;
         }
