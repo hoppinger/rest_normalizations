@@ -60,14 +60,16 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
         $context['level'] = 1;
       }
 
-      if(!in_array($field_item->getFieldDefinition()->getName(), $context['included_field']) || $context['level'] < 3) {
+      $config = \Drupal::config('rest_normalizations.settings');
+      $max_level = $config->get('max_level');
+
+      if(!in_array($field_item->getFieldDefinition()->getName(), $context['included_field']) || $context['level'] <= $max_level) {
         $context['included_field'][] = $field_item->getFieldDefinition()->getName();
         if(!($entity instanceof Paragraph)) {
           $context['level']++;
         }
         $values['target'] = $this->serializer->normalize($entity, $format, $context);
       }
-
     }
 
     return $values;

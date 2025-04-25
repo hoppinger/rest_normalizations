@@ -46,6 +46,8 @@ class ContentEntityNormalizer extends BaseNormalizer {
 
     $config = \Drupal::config('rest_normalizations.settings');
     $settings = $config->get('rest_fields');
+    $max_level = $config->get('max_level');
+
     if ($settings) {
       foreach($settings as $setting) {
         if($setting['entity_type'] == $entity->getEntityTypeId()) {
@@ -61,22 +63,13 @@ class ContentEntityNormalizer extends BaseNormalizer {
 
     /** @var \Drupal\Core\Entity\Entity $entity */
     foreach (TypedDataInternalPropertiesHelper::getNonInternalProperties($entity->getTypedData()) as $name => $field_items) {
-      $normalize = FALSE;
+      $normalize = TRUE;
 
       if ($field_items->access('view', $context['account'])) {
-        if ($entity instanceof Media || $entity instanceof \Drupal\file\Entity\File) {
-          $normalize = TRUE;
-        }
-        elseif (str_starts_with($name, 'field_')) {
-          if ($context['level'] < 3) {
-            $normalize = TRUE;
+        if (str_starts_with($name, 'field_')) {
+          if ($context['level'] > 2 && isset($fields[$entity->getEntityTypeId()]) && !in_array($name, $fields[$entity->getEntityTypeId()]) && $context['level'] <= $max_level) {
+            $normalize = FALSE;
           }
-        }
-        elseif ($entity instanceof Paragraph && !in_array($name, $fields)) {
-          continue;
-        }
-        elseif ($entity && in_array($name, $fields[$entity->getEntityTypeId()])) {
-          $normalize = TRUE;
         }
       }
 

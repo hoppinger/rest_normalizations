@@ -38,7 +38,7 @@ class RestNormalizations extends ConfigFormBase
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('rest_normalizations.settings');
     $settings = $config->get('rest_fields') ?? [];
-
+    $max_level = $config->get('max_level') ?? 0;
     $form['description'] = [
       '#type' => 'item',
       '#markup' => $this->t('Configuration form to add fields returned in REST reponse'),
@@ -51,6 +51,15 @@ class RestNormalizations extends ConfigFormBase
     $form_state->set('count', $count);
 
     $form['#tree'] = TRUE;
+
+    $form['max_level'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Maximum normalizer level'),
+      '#required' => TRUE,
+      '#description' => t("Maximumm level to which the fields can be normalized."),
+      '#default_value' => $max_level
+    ];
+
     $form['rest_fields'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Fields'),
@@ -110,6 +119,7 @@ class RestNormalizations extends ConfigFormBase
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('rest_normalizations.settings');
+    $max_level = $form_state->getValue('max_level');
     $values = $form_state->getValue('rest_fields');
     unset($values['actions']);
     foreach ($values as &$value) {
@@ -117,6 +127,7 @@ class RestNormalizations extends ConfigFormBase
       $value['entity_fields'] = str_replace(' ', '', $value['entity_fields']);
     }
     $config->set('rest_fields', $values)->save();
+    $config->set('max_level', $max_level)->save();
     parent::submitForm($form, $form_state);
   }
 

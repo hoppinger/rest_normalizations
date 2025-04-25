@@ -1,7 +1,8 @@
 rest_fields:
   -
     entity_type: node
-    entity_fields: 'nid,uuid,vid,langcode,type,status,title,created,changed,moderation_state,type,parent_id,parent_field_name,metatag,path,default_langcode,revision_id,revision_uid,revision_timestamp,revision_log,uid,promote'
+    entity_fields: 'nid,uuid,vid,langcode,type,status,title,created,changed,moderation_state,type,parent_id,parent_field_name,metatag,path,default_langcode,revision_id,revision_uid,revision_timestamp,revision_log,uid,promote,author,language,label,sticky,revision_translation_affected,language_links,entity_operations'
   -
     entity_type: taxonomy_term
-    entity_fields: 'tid,name,description,parent,weight,default_langcode,revision_id,revision_uid,revision_timestamp,revision_log,uid,promote'
+    entity_fields: 'tid,uuid,revision_id,langcode,vid,revision_created,revision_user,revision_log_message,status,name,description,weight,parent,changed,default_langcode,revision_translation_affected,metatag,path,language_links,entity_operations'
+max_level: '4'
