@@ -61,22 +61,13 @@ class ContentEntityNormalizer extends BaseNormalizer {
 
     /** @var \Drupal\Core\Entity\Entity $entity */
     foreach (TypedDataInternalPropertiesHelper::getNonInternalProperties($entity->getTypedData()) as $name => $field_items) {
-      $normalize = FALSE;
+      $normalize = TRUE;
 
       if ($field_items->access('view', $context['account'])) {
-        if ($entity instanceof Media || $entity instanceof \Drupal\file\Entity\File) {
-          $normalize = TRUE;
-        }
-        elseif (str_starts_with($name, 'field_')) {
-          if ($context['level'] < 3) {
-            $normalize = TRUE;
+        if (str_starts_with($name, 'field_')) {
+          if ($context['level'] > 2 && $fields[$entity->getEntityTypeId()] && !in_array($name, $fields[$entity->getEntityTypeId()])) {
+            $normalize = FALSE;
           }
-        }
-        elseif ($entity instanceof Paragraph && !in_array($name, $fields)) {
-          continue;
-        }
-        elseif ($entity && in_array($name, $fields[$entity->getEntityTypeId()])) {
-          $normalize = TRUE;
         }
       }
 
