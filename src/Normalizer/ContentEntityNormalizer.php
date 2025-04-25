@@ -9,8 +9,6 @@ use Drupal\Core\Entity\EntityTypeRepositoryInterface;
 use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Drupal\serialization\Normalizer\ContentEntityNormalizer as BaseNormalizer;
 use Drupal\Core\TypedData\TypedDataInternalPropertiesHelper;
-use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\media\Entity\Media;
 
 class ContentEntityNormalizer extends BaseNormalizer {
   /**

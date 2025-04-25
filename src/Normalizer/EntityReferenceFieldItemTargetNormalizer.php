@@ -43,7 +43,6 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
 
   public function normalize($field_item, $format = NULL, array $context = []): \ArrayObject|array|string|int|float|bool|null {
     $values = parent::normalize($field_item, $format, $context);
-
     $langcode = $this->languageManager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
 
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
@@ -52,9 +51,9 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
       if ($entity instanceof TranslatableInterface) {
         $entity = \Drupal::service('entity.repository')->getTranslationFromContext($entity, $langcode);
       }
-      
+
       $this->addCacheableDependency($context, $entity);
-      
+
       if(!isset($context['level'])) {
         $context['level'] = 1;
       }
@@ -62,7 +61,7 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
       $config = \Drupal::config('rest_normalizations.settings');
       $max_level = $config->get('max_level');
 
-      if($context['level'] < $max_level) {
+      if($context['level'] <= $max_level) {
         if(!($entity instanceof Paragraph)) {
           $context['level']++;
         }
