@@ -67,7 +67,7 @@ class ContentEntityNormalizer extends BaseNormalizer {
 
       if ($field_items->access('view', $context['account'])) {
         if (str_starts_with($name, 'field_')) {
-          if ($context['level'] > 2 && isset($fields[$entity->getEntityTypeId()]) && !in_array($name, $fields[$entity->getEntityTypeId()]) && $context['level'] <= $max_level) {
+          if ($context['level'] > 2 && isset($fields[$entity->getEntityTypeId()]) && in_array($name, $fields[$entity->getEntityTypeId()]) && $context['level'] <= $max_level) {
             $normalize = FALSE;
           }
         }
