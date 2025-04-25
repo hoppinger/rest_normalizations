@@ -48,7 +48,9 @@ class ContentEntityNormalizer extends BaseNormalizer {
     $settings = $config->get('rest_fields');
     if ($settings) {
       foreach($settings as $setting) {
-        $fields[$entity->getEntityTypeId()] = explode(',', $setting['entity_fields']);
+        if($setting['entity_type'] == $entity->getEntityTypeId()) {
+          $fields[$entity->getEntityTypeId()] = explode(',', $setting['entity_fields']);
+        }
       }
     }
 
@@ -62,7 +64,7 @@ class ContentEntityNormalizer extends BaseNormalizer {
       $normalize = FALSE;
 
       if ($field_items->access('view', $context['account'])) {
-        if ($entity instanceof Media) {
+        if ($entity instanceof Media || $entity instanceof \Drupal\file\Entity\File) {
           $normalize = TRUE;
         }
         elseif (str_starts_with($name, 'field_')) {
