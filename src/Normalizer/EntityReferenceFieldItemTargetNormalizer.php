@@ -7,6 +7,7 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\file\Entity\File;
 
 class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemNormalizer {
   /**
@@ -61,7 +62,7 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
       $config = \Drupal::config('rest_normalizations.settings');
       $max_level = $config->get('max_level');
 
-      if($context['level'] <= $max_level) {
+      if($context['level'] <= $max_level || $entity instanceof File) {
         if(!($entity instanceof Paragraph)) {
           $context['level']++;
         }
