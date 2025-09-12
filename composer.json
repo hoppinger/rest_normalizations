@@ -9,10 +9,14 @@
     {
       "name": "Rolf van de Krol",
       "role": "Maintainer"
+    },
+    {
+      "name": "Amit Ajgaonkar",
+      "role": "Maintainer"
     }
   ],
   "require": {
-    "php": ">=8.1",
+    "php": ">=8.3",
     "drupal/core": "^10 || ^11"
   }
 }
