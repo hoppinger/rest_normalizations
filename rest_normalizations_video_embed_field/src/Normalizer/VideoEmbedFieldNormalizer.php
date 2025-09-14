@@ -26,7 +26,7 @@ class VideoEmbedFieldNormalizer extends FieldItemNormalizer {
    */
   public function normalize($object, $format = NULL, array $context = []): \ArrayObject|array|string|int|float|bool|null  {
     $data = parent::normalize($object, $format, $context);
-
+    
     $provider = $this->providerManager->loadProviderFromInput($object->value);
     if (!$provider) {
       return $data;
@@ -67,5 +67,11 @@ class VideoEmbedFieldNormalizer extends FieldItemNormalizer {
     }
 
     return $url;
+  }
+
+  public function getSupportedTypes(?string $format): array {
+    return [
+      VideoEmbedField::class => TRUE,
+    ];
   }
 }

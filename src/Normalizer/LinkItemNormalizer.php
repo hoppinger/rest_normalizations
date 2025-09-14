@@ -25,4 +25,10 @@ class LinkItemNormalizer extends FieldItemNormalizer {
 
     return $values;
   }
+
+  public function getSupportedTypes(?string $format): array {
+    return [
+      LinkItem::class => TRUE,
+    ];
+  }
 }

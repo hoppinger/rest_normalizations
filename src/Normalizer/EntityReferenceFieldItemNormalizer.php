@@ -62,4 +62,10 @@ class EntityReferenceFieldItemNormalizer extends FieldItemNormalizer {
   public function hasCacheableSupportsMethod(): bool {
     return FALSE;
   }
+
+  public function getSupportedTypes(?string $format): array {
+    return [
+      EntityReferenceItem::class => FALSE,
+    ];
+  }
 }
