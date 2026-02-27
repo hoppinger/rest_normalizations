@@ -93,7 +93,7 @@ class ContentEntityNormalizer extends BaseNormalizer {
       }
       
       $operations = $listBuilder->getOperations($entity);
-      $data['entity_operations'] = $operations ? [] : new StdClass;
+      $data['entity_operations'] = $operations ? [] : new \stdClass();
       foreach ($operations as $key => $operation) {
         $data['entity_operations'][$key] = [
           'title' => $operation['title'],
