@@ -68,4 +68,13 @@ class VideoEmbedFieldNormalizer extends FieldItemNormalizer {
 
     return $url;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSupportedTypes(?string $format): array {
+    return [
+      VideoEmbedField::class => TRUE,
+    ];
+  }
 }

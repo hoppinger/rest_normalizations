@@ -20,4 +20,13 @@ class TextFieldItemNormalizer extends FieldItemNormalizer {
 
     return $values;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSupportedTypes(?string $format): array {
+    return [
+      TextItemBase::class => TRUE,
+    ];
+  }
 }

@@ -7,6 +7,7 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal\Core\TypedData\TypedDataInternalPropertiesHelper;
+use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
 
 class EntityReferenceFieldItemFieldTargetNormalizer extends EntityReferenceFieldItemNormalizer {
 
@@ -83,5 +84,14 @@ class EntityReferenceFieldItemFieldTargetNormalizer extends EntityReferenceField
       $values['target'] = $target;
     }
     return $values;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSupportedTypes(?string $format): array {
+    return [
+      EntityReferenceItem::class => TRUE,
+    ];
   }
 }

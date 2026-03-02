@@ -5,6 +5,7 @@ namespace Drupal\rest_normalizations\Normalizer;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
+use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
 use Drupal;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\file\Entity\File;
@@ -78,5 +79,14 @@ class EntityReferenceFieldItemTargetNormalizer extends EntityReferenceFieldItemN
    */
   public function hasCacheableSupportsMethod(): bool {
     return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSupportedTypes(?string $format): array {
+    return [
+      EntityReferenceItem::class => TRUE,
+    ];
   }
 }
