@@ -13,7 +13,7 @@ class TextFieldItemNormalizer extends FieldItemNormalizer {
    */
   protected $supportedInterfaceOrClass = TextItemBase::class;
 
-  public function normalize($field_item, $format = NULL, array $context = []): \ArrayObject|array|string|int|float|bool|null {
+  public function normalize($field_item, $format = NULL, array $context = []): array {
     /** @var \Drupal\text\Plugin\Field\FieldType\TextItemBase $field_item */
     $values = parent::normalize($field_item, $format, $context);
     $values['processed'] = $this->serializer->normalize($field_item->get('processed'), $format, $context);

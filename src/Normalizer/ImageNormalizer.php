@@ -33,7 +33,7 @@ class ImageNormalizer extends ContentEntityNormalizer {
     return TRUE;
   }
 
-  public function normalize($entity, $format = NULL, array $context = []): \ArrayObject|array|string|int|float|bool|null  {
+  public function normalize($entity, $format = NULL, array $context = []): array {
     $data = parent::normalize($entity, $format, $context);
 
     $path = $entity->getFileUri();

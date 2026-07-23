@@ -22,7 +22,7 @@ class EntityReferenceFieldItemNormalizer extends FieldItemNormalizer {
     $this->languageManager = $languageManager;
   }
 
-  public function normalize($field_item, $format = null, array $context = []): \ArrayObject|array|string|int|float|bool|null {
+  public function normalize($field_item, $format = null, array $context = []): array {
     $values = parent::normalize($field_item, $format, $context);
 
     $langcode = $this->languageManager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();

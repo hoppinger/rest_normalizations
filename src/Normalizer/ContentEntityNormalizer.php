@@ -37,7 +37,7 @@ class ContentEntityNormalizer extends BaseNormalizer {
     return FALSE;
   }
 
-  public function normalize($object, $format = NULL, array $context = []): \ArrayObject|array|string|int|float|bool|null {
+  public function normalize($object, $format = NULL, array $context = []): array {
     $data = parent::normalize($object, $format, $context);
 
     $data['language_links'] = [];

@@ -52,7 +52,7 @@ class EntityReferenceFieldItemFieldTargetNormalizer extends EntityReferenceField
     return FALSE;
   }
 
-  public function normalize($field_item, $format = NULL, array $context = []): \ArrayObject|array|string|int|float|bool|null {
+  public function normalize($field_item, $format = NULL, array $context = []): array {
     $values = parent::normalize($field_item, $format, $context);
     $field_identifiers = $this->getFieldData($field_item);
 

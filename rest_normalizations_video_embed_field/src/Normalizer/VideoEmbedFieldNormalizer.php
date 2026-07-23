@@ -24,7 +24,7 @@ class VideoEmbedFieldNormalizer extends FieldItemNormalizer {
   /**
    * {@inheritdoc}
    */
-  public function normalize($object, $format = NULL, array $context = []): \ArrayObject|array|string|int|float|bool|null  {
+  public function normalize($object, $format = NULL, array $context = []): array {
     $data = parent::normalize($object, $format, $context);
     
     $provider = $this->providerManager->loadProviderFromInput($object->value);
